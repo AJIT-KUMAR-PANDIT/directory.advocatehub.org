@@ -5,9 +5,11 @@ import { useState } from "react";
 interface HeaderProps {
   activeTab: string;
   onTabChange: (tab: "hero" | "directory" | "booking") => void;
+  navSearch: string;
+  onNavSearchChange: (val: string) => void;
 }
 
-export default function Header({ activeTab, onTabChange }: HeaderProps) {
+export default function Header({ activeTab, onTabChange, navSearch, onNavSearchChange }: HeaderProps) {
   const tabs = [
     { key: "hero", label: "Home" },
     { key: "directory", label: "Directory" },
@@ -20,11 +22,11 @@ export default function Header({ activeTab, onTabChange }: HeaderProps) {
       <div className="h-[2px] bg-gradient-to-r from-coral-300 via-amber-400 to-coral-300" />
 
       <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-12">
-        <div className="flex h-16 items-center justify-between md:h-[72px]">
+        <div className="flex h-16 items-center gap-4 md:h-[72px]">
           {/* Logo */}
           <button
             onClick={() => onTabChange("hero")}
-            className="flex items-center gap-2.5 focus-visible:rounded-lg focus-visible:ring-2 focus-visible:ring-coral-300"
+            className="flex items-center gap-2.5 focus-visible:rounded-lg focus-visible:ring-2 focus-visible:ring-coral-300 flex-shrink-0"
           >
             {/* Organic logo mark */}
             <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0">
@@ -35,10 +37,8 @@ export default function Header({ activeTab, onTabChange }: HeaderProps) {
                 </linearGradient>
               </defs>
               <circle cx="18" cy="18" r="17" stroke="url(#logoGrad)" strokeWidth="2" fill="#FFF1EB"/>
-              {/* Stylized person silhouette */}
               <circle cx="18" cy="13" r="4.5" fill="#E8533B" opacity="0.9"/>
               <path d="M10 26c1-4 3.5-7 8-7s7 3 8 7" stroke="#E8533B" strokeWidth="2" strokeLinecap="round" fill="none"/>
-              {/* Small accent dots */}
               <circle cx="29" cy="10" r="1.5" fill="#F59E0B" opacity="0.6"/>
               <circle cx="8" cy="8" r="1" fill="#FF9884" opacity="0.5"/>
             </svg>
@@ -47,15 +47,24 @@ export default function Header({ activeTab, onTabChange }: HeaderProps) {
             </span>
           </button>
 
-          {/* Tab navigation */}
-          <nav className="hidden md:flex items-center gap-1" role="tablist">
+          {/* Search bar — centered, expands into view */}
+          <div className="flex-1 max-w-xl mx-auto">
+            <NavSearchBar
+              value={navSearch}
+              onChange={onNavSearchChange}
+              onGo={() => onTabChange("directory")}
+            />
+          </div>
+
+          {/* Tab navigation (desktop) */}
+          <nav className="hidden lg:flex items-center gap-1" role="tablist">
             {tabs.map((tab) => (
               <button
                 key={tab.key}
                 role="tab"
                 aria-selected={activeTab === tab.key}
                 onClick={() => onTabChange(tab.key as "hero" | "directory" | "booking")}
-                className={`relative rounded-full px-5 py-2 text-sm font-medium transition-all duration-200 ${
+                className={`relative rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 ${
                   activeTab === tab.key
                     ? "bg-coral-50 text-coral-700 shadow-soft"
                     : "text-natural-500 hover:text-natural-700 hover:bg-natural-50"
@@ -67,7 +76,7 @@ export default function Header({ activeTab, onTabChange }: HeaderProps) {
           </nav>
 
           {/* CTA button + mobile menu */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-shrink-0">
             {activeTab !== "booking" && (
               <button
                 onClick={() => onTabChange("booking")}
@@ -87,6 +96,68 @@ export default function Header({ activeTab, onTabChange }: HeaderProps) {
         </div>
       </div>
     </header>
+  );
+}
+
+/* ── compact nav search bar ── */
+function NavSearchBar({
+  value,
+  onChange,
+  onGo,
+}: {
+  value: string;
+  onChange: (val: string) => void;
+  onGo: () => void;
+}) {
+  const [focused, setFocused] = useState(false);
+
+  return (
+    <div className="relative">
+      {/* Expanding background */}
+      <div
+        className={`absolute inset-0 rounded-full bg-warm-50 border transition-all duration-300 ${
+          focused ? "border-coral-400 shadow-soft" : "border-natural-100"
+        }`}
+        style={{ padding: focused ? "4px 6px" : "2px 4px" }}
+      />
+
+      <div className="relative flex items-center">
+        {/* Search icon */}
+        <svg
+          className="absolute left-3.5 pointer-events-none text-natural-300 transition-colors duration-200"
+          width="18"
+          height="18"
+          viewBox="0 0 18 18"
+          fill="none"
+        >
+          <circle cx="7.5" cy="7.5" r="5.5" stroke="currentColor" strokeWidth="1.8"/>
+          <path d="M12 12l4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+        </svg>
+
+        <input
+          type="text"
+          placeholder="Search advocates, topics…"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") onGo();
+          }}
+          className="w-full h-10 rounded-full bg-transparent pl-10 pr-24 text-sm text-natural-700 placeholder-natural-300 focus-visible:outline-none"
+        />
+
+        {/* Go button — appears when there's a query */}
+        {value && (
+          <button
+            onClick={onGo}
+            className="absolute right-2 top-1/2 -translate-y-1/2 h-7 rounded-full bg-coral-500 px-3.5 text-xs font-semibold text-white transition-all hover:bg-coral-600 active:scale-[0.97]"
+          >
+            Go
+          </button>
+        )}
+      </div>
+    </div>
   );
 }
 

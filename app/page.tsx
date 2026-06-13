@@ -11,6 +11,7 @@ import MobileBottomNav from "./components/MobileBottomNav";
 export default function Home() {
   const [activeTab, setActiveTab] = useState<"hero" | "directory" | "booking">("hero");
   const [mobileActive, setMobileActive] = useState<"home" | "directory" | "book">("home");
+  const [navSearch, setNavSearch] = useState("");
 
   const handleNavChange = useCallback((tab: "hero" | "directory" | "booking") => {
     setActiveTab(tab);
@@ -29,7 +30,12 @@ export default function Home() {
   return (
     <div className="flex min-h-screen flex-col relative">
       {/* Top Header */}
-      <Header activeTab={activeTab} onTabChange={handleNavChange} />
+      <Header
+        activeTab={activeTab}
+        onTabChange={handleNavChange}
+        navSearch={navSearch}
+        onNavSearchChange={setNavSearch}
+      />
 
       {/* Main content area */}
       <main className="flex-1">
@@ -40,7 +46,7 @@ export default function Home() {
           </>
         )}
 
-        {activeTab === "directory" && <DirectoryPage />}
+        {activeTab === "directory" && <DirectoryPage initialSearch={navSearch} />}
 
         {activeTab === "booking" && <BookingStepper onBack={() => setActiveTab("hero")} />}
       </main>
