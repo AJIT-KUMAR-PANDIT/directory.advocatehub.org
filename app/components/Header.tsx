@@ -1,21 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
-interface HeaderProps {
-  activeTab: string;
-  onTabChange: (tab: "hero" | "directory" | "booking") => void;
-  navSearch: string;
-  onNavSearchChange: (val: string) => void;
-}
-
-export default function Header({ activeTab, onTabChange, navSearch, onNavSearchChange }: HeaderProps) {
-  const tabs = [
-    { key: "hero", label: "Home" },
-    { key: "directory", label: "Directory" },
-    { key: "booking", label: "Book Consultation" },
-  ];
-
+export default function Header() {
+  const pathname = usePathname();
+  const activeTab = pathname === "/" ? "hero" : pathname === "/directory" ? "directory" : "booking";
   return (
     <header className="sticky top-0 z-50 border-b border-natural-100 bg-white/95 backdrop-blur-md">
       {/* Decorative top accent line */}
@@ -24,8 +15,8 @@ export default function Header({ activeTab, onTabChange, navSearch, onNavSearchC
       <div className="mx-auto max-w-7xl px-6 sm:px-8 lg:px-12">
         <div className="flex h-16 items-center gap-4 md:h-[72px]">
           {/* Logo */}
-          <button
-            onClick={() => onTabChange("hero")}
+          <Link
+            href="/"
             className="flex items-center gap-2.5 focus-visible:rounded-lg focus-visible:ring-2 focus-visible:ring-coral-300 flex-shrink-0"
           >
             {/* Organic logo mark */}
@@ -45,41 +36,40 @@ export default function Header({ activeTab, onTabChange, navSearch, onNavSearchC
             <span className="font-display text-xl font-bold tracking-tight text-natural-900 hidden sm:block">
               AdvocateHub
             </span>
-          </button>
+          </Link>
 
           {/* Search bar — centered, expands into view */}
           <div className="flex-1 max-w-xl mx-auto">
-            <NavSearchBar
-              value={navSearch}
-              onChange={onNavSearchChange}
-              onGo={() => onTabChange("directory")}
-            />
+            <NavSearchBar />
           </div>
 
           {/* Tab navigation (desktop) */}
           <nav className="hidden lg:flex items-center gap-1" role="tablist">
-            {tabs.map((tab) => (
-              <button
-                key={tab.key}
-                role="tab"
-                aria-selected={activeTab === tab.key}
-                onClick={() => onTabChange(tab.key as "hero" | "directory" | "booking")}
-                className={`relative rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 ${
-                  activeTab === tab.key
-                    ? "bg-coral-50 text-coral-700 shadow-soft"
-                    : "text-natural-500 hover:text-natural-700 hover:bg-natural-50"
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
+            {(["hero", "directory", "booking"] as const).map((key, i) => {
+              const labels = ["Home", "Directory", "Book Consultation"];
+              const hrefs = ["/", "/directory", "/book"];
+              return (
+                <Link
+                  key={key}
+                  href={hrefs[i]}
+                  aria-selected={activeTab === key}
+                  className={`relative rounded-full px-4 py-2 text-sm font-medium transition-all duration-200 ${
+                    activeTab === key
+                      ? "bg-coral-50 text-coral-700 shadow-soft"
+                      : "text-natural-500 hover:text-natural-700 hover:bg-natural-50"
+                  }`}
+                >
+                  {labels[i]}
+                </Link>
+              );
+            })}
           </nav>
 
           {/* CTA button + mobile menu */}
           <div className="flex items-center gap-3 flex-shrink-0">
             {activeTab !== "booking" && (
-              <button
-                onClick={() => onTabChange("booking")}
+              <Link
+                href="/book"
                 className="hidden sm:inline-flex h-10 items-center justify-center gap-2 rounded-full bg-coral-500 px-6 text-sm font-semibold text-white shadow-btn transition-all hover:bg-coral-600 hover:shadow-btn-hover active:scale-[0.98]"
               >
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -87,11 +77,11 @@ export default function Header({ activeTab, onTabChange, navSearch, onNavSearchC
                   <path d="M5 1v4M11 1v4M2 7h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
                 </svg>
                 Book Now
-              </button>
+              </Link>
             )}
 
             {/* Mobile hamburger */}
-            <MobileMenuButton onNavChange={onTabChange} activeTab={activeTab} />
+            <MobileMenuButton />
           </div>
         </div>
       </div>
@@ -100,15 +90,7 @@ export default function Header({ activeTab, onTabChange, navSearch, onNavSearchC
 }
 
 /* ── compact nav search bar ── */
-function NavSearchBar({
-  value,
-  onChange,
-  onGo,
-}: {
-  value: string;
-  onChange: (val: string) => void;
-  onGo: () => void;
-}) {
+function NavSearchBar() {
   const [focused, setFocused] = useState(false);
 
   return (
@@ -134,42 +116,38 @@ function NavSearchBar({
           <path d="M12 12l4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
         </svg>
 
-        <input
-          type="text"
-          placeholder="Search advocates, topics…"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") onGo();
-          }}
-          className="w-full h-10 rounded-full bg-transparent pl-10 pr-24 text-sm text-natural-700 placeholder-natural-300 focus-visible:outline-none"
-        />
+        <Link href="/directory">
+          <input
+            type="text"
+            placeholder="Search advocates, topics…"
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
+            className="w-full h-10 rounded-full bg-transparent pl-10 pr-[76px] text-sm text-natural-700 placeholder-natural-300 focus-visible:outline-none"
+          />
+        </Link>
 
-        {/* Go button — appears when there's a query */}
-        {value && (
-          <button
-            onClick={onGo}
-            className="absolute right-2 top-1/2 -translate-y-1/2 h-7 rounded-full bg-coral-500 px-3.5 text-xs font-semibold text-white transition-all hover:bg-coral-600 active:scale-[0.97]"
-          >
-            Go
-          </button>
-        )}
+        {/* Go button */}
+        <Link
+          href="/directory"
+          className="absolute right-2 top-1/2 -translate-y-1/2 h-7 rounded-full bg-coral-500 px-3.5 text-xs font-semibold text-white transition-all hover:bg-coral-600 active:scale-[0.97]"
+        >
+          Go
+        </Link>
       </div>
     </div>
   );
 }
 
 /* ── mobile menu button + overlay ── */
-function MobileMenuButton({
-  onNavChange,
-  activeTab,
-}: {
-  onNavChange: (tab: "hero" | "directory" | "booking") => void;
-  activeTab: string;
-}) {
+function MobileMenuButton() {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
+
+  const tabs = [
+    { href: "/", label: "Home" },
+    { href: "/directory", label: "Directory" },
+    { href: "/book", label: "Book Consultation" },
+  ];
 
   return (
     <>
@@ -192,25 +170,19 @@ function MobileMenuButton({
             onClick={() => setOpen(false)}
           />
           <div className="fixed right-4 top-[64px] z-50 w-64 rounded-xl border border-natural-100 bg-white p-3 shadow-elevated md:hidden">
-            {([
-              { key: "hero", label: "Home" },
-              { key: "directory", label: "Directory" },
-              { key: "booking", label: "Book Consultation" },
-            ] as const).map((tab) => (
-              <button
-                key={tab.key}
-                onClick={() => {
-                  onNavChange(tab.key);
-                  setOpen(false);
-                }}
+            {tabs.map((tab) => (
+              <Link
+                key={tab.href}
+                href={tab.href}
+                onClick={() => setOpen(false)}
                 className={`flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
-                  activeTab === tab.key
+                  pathname === tab.href || (tab.href === "/" && !pathname)
                     ? "bg-coral-50 text-coral-700"
                     : "text-natural-600 hover:bg-natural-50"
                 }`}
               >
                 {tab.label}
-              </button>
+              </Link>
             ))}
           </div>
         </>

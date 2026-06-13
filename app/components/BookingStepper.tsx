@@ -1,10 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-
-interface BookingProps {
-  onBack: () => void;
-}
+import { useRouter } from "next/navigation";
 
 const steps = [
   { id: 1, label: "Describe" },
@@ -85,8 +82,26 @@ function Stepper({ current, onStep }: { current: number; onStep: (s: number) => 
   );
 }
 
+/* ── Advocate options for step 2 ── */
+interface AdvocateOption {
+  id: number;
+  name: string;
+  initials: string;
+  color: string;
+  specialty: string;
+  rating: number;
+  reviews: number;
+}
+
+const advocateOptions: AdvocateOption[] = [
+  { id: 1, name: "Sarah Chen", initials: "SC", color: "#FF9884 bg-coral-400", specialty: "Housing Rights", rating: 4.9, reviews: 127 },
+  { id: 2, name: "Michael Torres", initials: "MT", color: "bg-green-600", specialty: "Immigration Law", rating: 4.8, reviews: 93 },
+  { id: 3, name: "David Kim", initials: "DK", color: "bg-sky-500", specialty: "Employment Rights", rating: 4.9, reviews: 156 },
+];
+
 /* ── Main Booking Page ── */
-export default function BookingStepper({ onBack }: BookingProps) {
+export default function BookingStepper() {
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [issueNotes, setIssueNotes] = useState("");
@@ -94,7 +109,6 @@ export default function BookingStepper({ onBack }: BookingProps) {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
   const [formData, setFormData] = useState({ name: "", email: "", phone: "" });
-  const [confirmed, setConfirmed] = useState(false);
 
   const selectedAdvocateData = useMemo(() => {
     if (selectedAdvocate === 0) return null;
@@ -317,14 +331,13 @@ export default function BookingStepper({ onBack }: BookingProps) {
 
             <div className="mt-8 flex justify-center gap-4">
               <button
-                onClick={onBack}
+                onClick={() => router.back()}
                 className="rounded-full border border-natural-200 px-6 py-3 text-sm font-semibold text-natural-700 hover:bg-natural-50"
               >
-                Back to Home
+                Back to Previous
               </button>
               <button
                 onClick={() => {
-                  setConfirmed(false);
                   setCurrentStep(1);
                   setSelectedCategory("");
                   setSelectedAdvocate(0);
@@ -344,12 +357,6 @@ export default function BookingStepper({ onBack }: BookingProps) {
         return null;
     }
   }
-
-  const advocateOptions = [
-    { id: 1, name: "Sarah Chen", initials: "SC", color: "#FF9884 bg-coral-400", specialty: "Housing Rights", rating: 4.9, reviews: 127 },
-    { id: 2, name: "Michael Torres", initials: "MT", color: "bg-green-600", specialty: "Immigration Law", rating: 4.8, reviews: 93 },
-    { id: 3, name: "David Kim", initials: "DK", color: "bg-sky-500", specialty: "Employment Rights", rating: 4.9, reviews: 156 },
-  ];
 
   const canProceed = () => {
     switch (currentStep) {
@@ -373,38 +380,27 @@ export default function BookingStepper({ onBack }: BookingProps) {
         {/* Navigation buttons (hide on step 5 / confirm) */}
         {currentStep < 5 && (
           <div className="mt-10 flex items-center justify-between max-w-4xl mx-auto">
-            {currentStep > 1 ? (
-              <button
-                onClick={() => setCurrentStep(currentStep - 1)}
-                className="flex items-center gap-2 text-sm font-medium text-natural-500 hover:text-natural-700 transition-colors"
-              >
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path d="M10 3L6 8l4 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                Back
-              </button>
-            ) : (
-              <button onClick={onBack} className="text-sm font-medium text-natural-500 hover:text-natural-700 transition-colors">
-                ← Back to home
-              </button>
-            )}
+            <button
+              onClick={() => router.back()}
+              className="text-sm font-medium text-natural-500 hover:text-natural-700 transition-colors"
+            >
+              ← Back to previous page
+            </button>
 
-            {currentStep === 5 ? null : (
-              <button
-                disabled={!canProceed()}
-                onClick={() => setCurrentStep(currentStep + 1)}
-                className={`flex h-12 items-center justify-center gap-2 rounded-full px-8 text-sm font-semibold transition-all ${
-                  canProceed()
-                    ? "bg-coral-500 text-white shadow-btn hover:bg-coral-600 hover:shadow-btn-hover active:scale-[0.98]"
-                    : "cursor-not-allowed bg-natural-200 text-natural-400"
-                }`}
-              >
-                {currentStep === 4 ? "Confirm Booking" : "Continue"}
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path d="M6 3l4 5-4 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </button>
-            )}
+            <button
+              disabled={!canProceed()}
+              onClick={() => setCurrentStep(currentStep + 1)}
+              className={`flex h-12 items-center justify-center gap-2 rounded-full px-8 text-sm font-semibold transition-all ${
+                canProceed()
+                  ? "bg-coral-500 text-white shadow-btn hover:bg-coral-600 hover:shadow-btn-hover active:scale-[0.98]"
+                  : "cursor-not-allowed bg-natural-200 text-natural-400"
+              }`}
+            >
+              {currentStep === 4 ? "Confirm Booking" : "Continue"}
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M6 3l4 5-4 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
           </div>
         )}
       </div>

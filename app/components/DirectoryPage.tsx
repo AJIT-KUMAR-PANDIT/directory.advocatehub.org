@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 
 /* ── Mock data ── */
 const practiceAreas = [
@@ -238,14 +238,9 @@ function AdvocateCard({ advocate }: { advocate: Advocate }) {
 }
 
 /* ── Main Directory Page ── */
-export default function DirectoryPage({ initialSearch }: { initialSearch?: string }) {
-  const [search, setSearch] = useState(initialSearch || "");
+export default function DirectoryPage() {
+  const [search, setSearch] = useState("");
   const [selectedArea, setSelectedArea] = useState("All Areas");
-
-  // Sync search from nav bar when navigating to this page
-  useEffect(() => {
-    if (initialSearch !== undefined) setSearch(initialSearch);
-  }, [initialSearch]);
 
   const filteredAdvocates = useMemo(() => {
     return advocates.filter((a) => {

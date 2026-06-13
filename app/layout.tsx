@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Crimson_Pro, Inter } from "next/font/google";
 import "./globals.css";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+import MobileBottomNav from "./components/MobileBottomNav";
 
 const crimson = Crimson_Pro({
   subsets: ["latin"],
@@ -22,18 +25,15 @@ export const metadata: Metadata = {
     "Find trusted legal advocates near you. Search our directory, filter by practice area, and book consultations in seconds.",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang="en"
-      className={`${crimson.variable} ${inter.variable} antialiased`}
-    >
-      <body className="min-h-screen bg-warm-50 text-natural-700 font-sans">
+    <html lang="en" className={`${crimson.variable} ${inter.variable} antialiased`}>
+      <body className="min-h-screen bg-warm-50 text-natural-700 font-sans flex flex-col relative">
+        {/* Global chrome — renders on every route via usePathname() */}
+        <Header />
         {children}
+        <Footer />
+        <MobileBottomNav />
       </body>
     </html>
   );

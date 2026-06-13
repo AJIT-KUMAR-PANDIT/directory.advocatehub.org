@@ -1,93 +1,13 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import Header from "./components/Header";
 import HeroSection from "./components/HeroSection";
 import StatsBar from "./components/StatsBar";
-import DirectoryPage from "./components/DirectoryPage";
-import BookingStepper from "./components/BookingStepper";
-import MobileBottomNav from "./components/MobileBottomNav";
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState<"hero" | "directory" | "booking">("hero");
-  const [mobileActive, setMobileActive] = useState<"home" | "directory" | "book">("home");
-  const [navSearch, setNavSearch] = useState("");
-
-  const handleNavChange = useCallback((tab: "hero" | "directory" | "booking") => {
-    setActiveTab(tab);
-    if (tab === "hero") setMobileActive("home");
-    else if (tab === "directory") setMobileActive("directory");
-    else setMobileActive("book");
-  }, []);
-
-  const handleMobileNav = useCallback((tab: "home" | "directory" | "book") => {
-    setMobileActive(tab);
-    if (tab === "home") setActiveTab("hero");
-    else if (tab === "directory") setActiveTab("directory");
-    else setActiveTab("booking");
-  }, []);
-
   return (
-    <div className="flex min-h-screen flex-col relative">
-      {/* Top Header */}
-      <Header
-        activeTab={activeTab}
-        onTabChange={handleNavChange}
-        navSearch={navSearch}
-        onNavSearchChange={setNavSearch}
-      />
-
-      {/* Main content area */}
-      <main className="flex-1">
-        {activeTab === "hero" && (
-          <>
-            <HeroSection onGetStarted={() => setActiveTab("directory")} />
-            <StatsBar />
-          </>
-        )}
-
-        {activeTab === "directory" && <DirectoryPage initialSearch={navSearch} />}
-
-        {activeTab === "booking" && <BookingStepper onBack={() => setActiveTab("hero")} />}
-      </main>
-
-      {/* Footer */}
-      <Footer activeTab={activeTab} />
-
-      {/* Mobile Bottom Nav */}
-      <MobileBottomNav active={mobileActive} onChange={handleMobileNav} />
-    </div>
-  );
-}
-
-function Footer({ activeTab }: { activeTab: string }) {
-  if (activeTab === "booking") return null;
-
-  return (
-    <footer className="border-t border-natural-100 bg-white mt-auto">
-      <div className="mx-auto max-w-7xl px-6 py-8 sm:px-8 lg:px-12">
-        <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
-          <div className="flex items-center gap-3">
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0">
-              <circle cx="16" cy="16" r="15" fill="#FF6B52" opacity="0.15"/>
-              <path d="M10 18c1.5-3 3.5-5 6-5s4.5 2 6 5" stroke="#E8533B" strokeWidth="2" strokeLinecap="round"/>
-              <circle cx="16" cy="12" r="3" fill="#E8533B"/>
-              <path d="M14 20h4" stroke="#E8533B" strokeWidth="1.5" strokeLinecap="round"/>
-            </svg>
-            <span className="font-display text-lg font-semibold text-natural-700">
-              AdvocateHub
-            </span>
-          </div>
-          <p className="text-sm text-natural-400">
-            Building bridges between communities and legal support.
-          </p>
-          <div className="flex gap-6 text-sm text-natural-500">
-            <a href="#" className="hover:text-coral-600 transition-colors">About</a>
-            <a href="#" className="hover:text-coral-600 transition-colors">Contact</a>
-            <a href="#" className="hover:text-coral-600 transition-colors">Privacy</a>
-          </div>
-        </div>
-      </div>
-    </footer>
+    <>
+      <HeroSection onGetStarted={() => (window.location.href = "/directory")} />
+      <StatsBar />
+    </>
   );
 }
