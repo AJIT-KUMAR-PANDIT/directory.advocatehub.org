@@ -1,26 +1,191 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --font-display: 'Crimson Pro', Georgia, serif;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Warm Soft palette */
+  --color-cream-50: #FFF8F0;
+  --color-cream-100: #FFEDD5;
+  --color-cream-200: #FFE4CC;
+  --color-warm-50: #FEFCF8;
+  --color-warm-100: #FFF5EB;
+  --color-warm-200: #F5E6D0;
+  --color-warm-700: #92400E;
+  --color-warm-800: #78350F;
+  --color-coral-50: #FFF1EB;
+  --color-coral-100: #FFD9CC;
+  --color-coral-200: #FFBBAA;
+  --color-coral-300: #FF9884;
+  --color-coral-400: #FF6B52;
+  --color-coral-500: #E8533B;
+  --color-coral-600: #D1412C;
+  --color-coral-700: #B53323;
+  --color-amber-100: #FEF3C7;
+  --color-amber-200: #FDE68A;
+  --color-amber-400: #F59E0B;
+  --color-amber-500: #D97706;
+  --color-sage-100: #ECF5EE;
+  --color-sage-200: #C6DFBF;
+  --color-sage-500: #4A7C59;
+  --color-sage-600: #386648;
+  --color-lavender-100: #F0E6FF;
+  --color-lavender-200: #D8B4FE;
+  --color-sky-100: #E0F2FE;
+  --color-sky-500: #0EA5E9;
+  --color-rose-100: #FFE4E6;
+
+  /* Text colors */
+  --color-natural-900: #1C1410;
+  --color-natural-700: #3D322A;
+  --color-natural-500: #6B5D54;
+  --color-natural-400: #8B7E75;
+  --color-natural-300: #B5A99F;
+  --color-natural-200: #D8CFC5;
+  --color-natural-100: #EDE6DF;
+  --color-natural-50: #F7F2EC;
+
+  /* Shadows */
+  --shadow-soft: 0 2px 16px rgba(120, 80, 40, 0.06);
+  --shadow-medium: 0 4px 24px rgba(120, 80, 40, 0.10);
+  --shadow-card-hover: 0 8px 32px rgba(120, 80, 40, 0.14);
+  --shadow-elevated: 0 12px 40px rgba(120, 80, 40, 0.16);
+  --shadow-btn: 0 4px 14px rgba(232, 83, 59, 0.35);
+  --shadow-btn-hover: 0 6px 20px rgba(232, 83, 59, 0.45);
+
+  /* Border radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* Spacing scale (custom) */
+  --spacing-section: 80px;
+  --spacing-hero-padding: 120px;
+  --spacing-card: 24px;
+  --spacing-input: 14px 18px;
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: 350ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+  }
+  ::selection {
+    background: var(--color-coral-100);
+    color: var(--color-natural-900);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  /* Organic blob shapes */
+  .blob-shape {
+    border-radius: 63% 37% 54% 46% / 55% 48% 52% 45%;
+  }
+  .blob-shape-alt {
+    border-radius: 40% 60% 65% 35% / 50% 40% 60% 50%;
+  }
+
+  /* Warm gradient backgrounds */
+  .bg-hero-gradient {
+    background: linear-gradient(135deg, #FFF8F0 0%, #FFEDD5 40%, #FFE4CC 70%, #FFF1EB 100%);
+  }
+  .bg-card-gradient {
+    background: linear-gradient(180deg, #FFFFFF 0%, #FEFCF8 100%);
+  }
+
+  /* Dotted decorative divider */
+  .dotted-divider {
+    border: none;
+    height: 2px;
+    background-image: radial-gradient(circle, var(--color-natural-200) 1.5px, transparent 1.5px);
+    background-size: 12px 2px;
+    background-position: center;
+    background-repeat: repeat-x;
+  }
+
+  /* Floating animation */
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-12px) rotate(3deg); }
+  }
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  @keyframes float-slow {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  .animate-float-slow {
+    animation: float-slow 8s ease-in-out infinite;
+  }
+
+  /* Pulse dot */
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.4); }
+  }
+  .animate-pulse-dot {
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+
+  /* Fade in */
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-up {
+    animation: fade-up 0.6s ease-out forwards;
+  }
+}
+
+/* Tab transition classes */
+.tab-panel {
+  display: none;
+}
+.tab-panel.active {
+  display: block;
+  animation: fade-up 0.4s ease-out;
+}
+.tab-indicator {
+  transition: transform var(--transition-base) cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Mobile bottom nav active bar */
+.mobile-tab-active {
+  transition: all var(--transition-base);
+}
+
+/* Smooth transitions for interactive elements */
+a, button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Card hover effect */
+.card-hover {
+  transition: box-shadow var(--transition-base), transform var(--transition-base);
+}
+.card-hover:hover {
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-2px);
+}
+
+/* Input focus ring */
+.input-focus:focus-visible {
+  outline: none;
+  border-color: var(--color-coral-400);
+  box-shadow: 0 0 0 3px var(--color-coral-50);
 }

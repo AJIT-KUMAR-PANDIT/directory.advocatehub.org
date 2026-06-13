@@ -1,65 +1,87 @@
-import Image from "next/image";
+"use client";
+
+import { useState, useCallback } from "react";
+import Header from "./components/Header";
+import HeroSection from "./components/HeroSection";
+import StatsBar from "./components/StatsBar";
+import DirectoryPage from "./components/DirectoryPage";
+import BookingStepper from "./components/BookingStepper";
+import MobileBottomNav from "./components/MobileBottomNav";
 
 export default function Home() {
+  const [activeTab, setActiveTab] = useState<"hero" | "directory" | "booking">("hero");
+  const [mobileActive, setMobileActive] = useState<"home" | "directory" | "book">("home");
+
+  const handleNavChange = useCallback((tab: "hero" | "directory" | "booking") => {
+    setActiveTab(tab);
+    if (tab === "hero") setMobileActive("home");
+    else if (tab === "directory") setMobileActive("directory");
+    else setMobileActive("book");
+  }, []);
+
+  const handleMobileNav = useCallback((tab: "home" | "directory" | "book") => {
+    setMobileActive(tab);
+    if (tab === "home") setActiveTab("hero");
+    else if (tab === "directory") setActiveTab("directory");
+    else setActiveTab("booking");
+  }, []);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+    <div className="flex min-h-screen flex-col relative">
+      {/* Top Header */}
+      <Header activeTab={activeTab} onTabChange={handleNavChange} />
+
+      {/* Main content area */}
+      <main className="flex-1">
+        {activeTab === "hero" && (
+          <>
+            <HeroSection onGetStarted={() => setActiveTab("directory")} />
+            <StatsBar />
+          </>
+        )}
+
+        {activeTab === "directory" && <DirectoryPage />}
+
+        {activeTab === "booking" && <BookingStepper onBack={() => setActiveTab("hero")} />}
       </main>
+
+      {/* Footer */}
+      <Footer activeTab={activeTab} />
+
+      {/* Mobile Bottom Nav */}
+      <MobileBottomNav active={mobileActive} onChange={handleMobileNav} />
     </div>
+  );
+}
+
+function Footer({ activeTab }: { activeTab: string }) {
+  if (activeTab === "booking") return null;
+
+  return (
+    <footer className="border-t border-natural-100 bg-white mt-auto">
+      <div className="mx-auto max-w-7xl px-6 py-8 sm:px-8 lg:px-12">
+        <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
+          <div className="flex items-center gap-3">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0">
+              <circle cx="16" cy="16" r="15" fill="#FF6B52" opacity="0.15"/>
+              <path d="M10 18c1.5-3 3.5-5 6-5s4.5 2 6 5" stroke="#E8533B" strokeWidth="2" strokeLinecap="round"/>
+              <circle cx="16" cy="12" r="3" fill="#E8533B"/>
+              <path d="M14 20h4" stroke="#E8533B" strokeWidth="1.5" strokeLinecap="round"/>
+            </svg>
+            <span className="font-display text-lg font-semibold text-natural-700">
+              AdvocateHub
+            </span>
+          </div>
+          <p className="text-sm text-natural-400">
+            Building bridges between communities and legal support.
+          </p>
+          <div className="flex gap-6 text-sm text-natural-500">
+            <a href="#" className="hover:text-coral-600 transition-colors">About</a>
+            <a href="#" className="hover:text-coral-600 transition-colors">Contact</a>
+            <a href="#" className="hover:text-coral-600 transition-colors">Privacy</a>
+          </div>
+        </div>
+      </div>
+    </footer>
   );
 }
